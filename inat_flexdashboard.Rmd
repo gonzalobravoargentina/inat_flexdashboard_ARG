@@ -14,6 +14,7 @@ library(ggplot2)
 library(plotly)
 library(spocc)
 library(rinat)
+library(mapr)
 
 
 library(RColorBrewer)
@@ -55,6 +56,12 @@ order=pardelas_obs_web$taxon_order_name,
 genus=pardelas_obs_web$taxon_genus_name,
 stringsAsFactors = FALSE)
 
+#add year from date info
+pardelas_obs_dataframe$year <- as.numeric(format(pardelas_obs_dataframe$date,"%Y"))
+
+obs_byyear = as.data.frame(table(pardelas_obs_dataframe$year))
+colnames(obs_byyear)=c("Año","Observaciones") 
+
 ```
 
 
@@ -88,6 +95,14 @@ p = taxranks %>% plot_ly(labels = ~Var1, values=~Freq) %>%
 
 plotly::config(p,displayModeBar = F) 
 ```
+
+###Observaciones por año
+```{r obsbyyear}
+#plot number of observation by date 
+ggplot(obs_byyear, aes(x=Año,y=Observaciones,group=1)) + geom_line() + geom_point()+ xlab("Año") + ylab("Observaciones") + theme_minimal()
+
+```
+
 
 Column3{data-width=150}
 -------
