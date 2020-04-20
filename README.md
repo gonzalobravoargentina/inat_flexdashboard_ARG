@@ -23,4 +23,4 @@ devtools::install_github("ropensci/rinat")
 
 
 
-[![psub_footer](https://www.proyectosub.org.ar/wp-content/uploads/2020/04/logocepillos.png)](https://proyectosub.org.ar)
+[![psub_footer](https://www.proyectosub.org.ar/wp-content/uploads/2020/04/logoletras_org.png)](https://proyectosub.org.ar)
