@@ -3,7 +3,8 @@ inat_flexdashboard_ARG
 
 Create a Flexdashboard in R Markdown to visualize observations data from a inaturalist project. Data may be obtained using the "rinat" package or downloaded from [inaturalist](https://www.inaturalist.org/) web site and imported via .csv. This Flexdashboard is made using data from the project [Biodiversidad Marina Bahía Pardelas](https://www.argentinat.org/projects/biodiversidad-marina-bahia-pardelas).
 
-##Sources
+## Sources
+
 Package used for getting inaturalist data:
 * [rinat](https://github.com/ropensci/rinat)
 
