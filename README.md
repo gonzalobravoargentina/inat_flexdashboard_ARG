@@ -1,33 +1,35 @@
 inaturalist Flexboard
-================
+inat_flexdashboard_ARG
+====
 
-GitHub Documents
-----------------
-
-This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
-
-Including Code
---------------
-
-You can include R code in the document as follows:
-
-``` r
-summary(cars)
+```{r echo=FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  collapse = TRUE,
+  comment = "#>"
+)
 ```
 
-    ##      speed           dist       
-    ##  Min.   : 4.0   Min.   :  2.00  
-    ##  1st Qu.:12.0   1st Qu.: 26.00  
-    ##  Median :15.0   Median : 36.00  
-    ##  Mean   :15.4   Mean   : 42.98  
-    ##  3rd Qu.:19.0   3rd Qu.: 56.00  
-    ##  Max.   :25.0   Max.   :120.00
+Create a Flexdashboard in R Markdown to visualize observations data from a inaturalist project. Data may be obtained using the "rinat" package or downloaded from [inaturalist](https://www.inaturalist.org/) web site and imported via .csv. This Flexdashboard is made using data from the project [Biodiversidad Marina Bahía Pardelas](https://www.argentinat.org/projects/biodiversidad-marina-bahia-pardelas).
 
-Including Plots
----------------
+##Sources
+Package used for getting inaturalist data:
+* [rinat](https://github.com/ropensci/rinat)
 
-You can also embed plots, for example:
+Package for making maps of species occurrence data:
+* [mapr](https://github.com/ropensci/mapr)
 
-![](README_files/figure-markdown_github/pressure-1.png)
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Installation packages
+
+Install `rinat`
+
+Only available in the development version from GitHub
+```{r eval=FALSE}
+devtools::install_github("ropensci/rinat")
+```
+
+
+
+[![psub_footer](https://www.proyectosub.org.ar/wp-content/uploads/2020/04/logocepillos.png)](https://proyectosub.org)
