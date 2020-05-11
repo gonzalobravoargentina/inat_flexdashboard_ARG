@@ -3,6 +3,7 @@ title: "Biodiversidad Marina Bahía Pardelas"
 output: 
   flexdashboard::flex_dashboard:
     theme: lumen
+    social: menu
     source: embed
     logo: https://www.proyectosub.org.ar/wp-content/uploads/2020/04/logoinatproyectosub.png
 ---
@@ -38,7 +39,7 @@ palette(brewer.pal(8, "Set2"))
 #As some of the taxon information  (eg Phylum) is not included in the rinat package we proceed to import data from csv. the package "spocc" shoul be explored for download data.
 
 #Read data downloaded from inat site 
-pardelas_obs_web <- read.csv("observations.csv")
+pardelas_obs_web <- read.csv("observations-MAY2020.csv")
 
 #we create a dataframe with the variable of interest.
 pardelas_obs_dataframe <- data.frame(
@@ -70,7 +71,7 @@ Column1{data-width=250}
 
 ### Tabla Observaciones {data-width=245}
 ```{r taxalist}
-knitr::kable(table(pardelas_obs_dataframe$name),col.names = c("Especies","Observaciones"))
+knitr::kable(as.data.frame(table(reorder(pardelas_obs_dataframe$name,rep(-1,length(pardelas_obs_dataframe$name)),sum))),col.names = c("Especies","Observaciones"))
 
 ```
 
@@ -96,7 +97,7 @@ p = taxranks %>% plot_ly(labels = ~Var1, values=~Freq) %>%
 plotly::config(p,displayModeBar = F) 
 ```
 
-###Observaciones por año
+### Observaciones por año
 ```{r obsbyyear}
 #plot number of observation by date 
 ggplot(obs_byyear, aes(x=Año,y=Observaciones,group=1)) + geom_line() + geom_point()+ xlab("Año") + ylab("Observaciones") + theme_minimal()
@@ -107,7 +108,7 @@ ggplot(obs_byyear, aes(x=Año,y=Observaciones,group=1)) + geom_line() + geom_poi
 Column3{data-width=150}
 -------
 
-###Números
+### Números
 ```{r}
 #spp 
 nspp = length(unique(pardelas_obs_dataframe$name))
@@ -115,7 +116,10 @@ gauge(nspp, min=0, max=100,label="Species")
 
 #algae
 nPlants = length(unique(pardelas_obs_dataframe$taxon[pardelas_obs_dataframe$taxon=="Plantae"|pardelas_obs_dataframe$taxon=="Chromista"]))
-gauge(nPlants, min=0, max=100,label="Algas")
+gauge(nPlants, min=0, max=100,label="Algas",sectors = gaugeSectors(success = c(0, 40),
+                             warning = c(40, 60),
+                             danger = c(60, 100),
+                             colors = c("green", rgb(0, 1, 0), "#CC664D")))
 
 #fish
 nfish = length(unique(pardelas_obs_dataframe$name[pardelas_obs_dataframe$taxon=="Actinopterygii"]))
@@ -123,7 +127,7 @@ gauge(nfish, min=0, max=100,label="Peces")
 
 #invertebrates
 ninvertebrates = length(unique(pardelas_obs_dataframe$name[pardelas_obs_dataframe$taxon=="Animalia"|pardelas_obs_dataframe$taxon=="Mollusca"]))
-gauge(ninvertebrates, min=0, max=100,label="Invertebrates")
+gauge(ninvertebrates, min=0, max=100,label="Invertebrados")
 ```
 
 
