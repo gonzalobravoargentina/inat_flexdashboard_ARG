@@ -1,0 +1,200 @@
+---
+title: "Invertebrados Marinos Golfo Nuevo"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: lumen
+    social: menu
+    source: embed
+    logo: https://www.proyectosub.org.ar/wp-content/uploads/2020/04/logoinatproyectosub.png
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(leaflet)
+library(ggplot2)
+library(plotly)
+library(spocc)
+library(rinat)
+library(mapr)
+
+
+library(RColorBrewer)
+palette(brewer.pal(8, "Set2"))
+
+
+```
+
+```{r dataread, message=FALSE, warning=FALSE, include=FALSE}
+
+
+#Extract data from the project "biodiversidad-marina-bahia-pardelas"
+#projecy_info <- pardelas_obs <- get_inat_obs_project("biodiversidad-marina-bahia-pardelas", type = "info", raw = FALSE)
+
+#extract observations
+#pardelas_obs <- get_inat_obs_project(projecy_info$id, type = "observations")
+
+#create data frame with reduced info
+#pardelas_obs_dataframe <- data.frame(name = pardelas_obs$taxon.name,longitude = as.numeric(pardelas_obs$longitude),latitude = as.numeric(pardelas_obs$latitude),user=pardelas_obs$user_login,date= as.Date(pardelas_obs$observed_on), taxonrank=pardelas_obs$taxon.rank,taxonid=pardelas_obs$taxon.id,taxon= pardelas_obs$iconic_taxon.name, stringsAsFactors = FALSE)
+
+#As some of the taxon information  (eg Phylum) is not included in the rinat package we proceed to import data from csv. the package "spocc" shoul be explored for download data.
+
+#Read data downloaded from inat site 
+pardelas_obs_web <- read.csv("observations-GN_MAY27.csv")
+
+#we create a dataframe with the variable of interest.
+pardelas_obs_dataframe <- data.frame(
+name = pardelas_obs_web$scientific_name,
+longitude = pardelas_obs_web$longitude,
+latitude = pardelas_obs_web$latitude,
+user=pardelas_obs_web$user_login,
+date= as.Date(pardelas_obs_web$observed_on),
+taxonid=pardelas_obs_web$id,
+taxon= pardelas_obs_web$iconic_taxon_name,
+kindom= pardelas_obs_web$taxon_kingdom_name,
+phylum=pardelas_obs_web$taxon_phylum_name,
+class=pardelas_obs_web$taxon_class_name,
+order=pardelas_obs_web$taxon_order_name,
+genus=pardelas_obs_web$taxon_genus_name,
+stringsAsFactors = FALSE)
+
+#add year from date info
+pardelas_obs_dataframe$year <- as.numeric(format(pardelas_obs_dataframe$date,"%Y"))
+
+obs_byyear = as.data.frame(table(pardelas_obs_dataframe$year))
+colnames(obs_byyear)=c("Año","Observaciones") 
+
+```
+
+
+Column1{data-width=250}
+-------
+
+### Tabla Observaciones {data-width=245}
+```{r taxalist}
+knitr::kable(as.data.frame(table(reorder(pardelas_obs_dataframe$name,rep(-1,length(pardelas_obs_dataframe$name)),sum))),col.names = c("Especies","Observaciones"))
+
+```
+
+
+Column2 {.tabset .tabset-fade}
+-------
+
+### Mapa
+```{r map}
+map_leaflet(pardelas_obs_dataframe,size=4) %>% 
+  addMiniMap(toggleDisplay = T)
+```
+
+
+### Phylum 
+```{r donut}
+##numbers of observations by phylum 
+taxranks = as.data.frame(table(pardelas_obs_dataframe$phylum))
+##Donut plot
+p = taxranks %>% plot_ly(labels = ~Var1, values=~Freq) %>% 
+  add_pie(hole=0.6) %>% 
+  layout(title = ~paste0("Numero total de Taxa: ", length(unique(pardelas_obs_dataframe$taxonid)))) 
+
+plotly::config(p,displayModeBar = F) 
+```
+
+### Observaciones por año
+```{r obsbyyear}
+#plot number of observation by date 
+ggplot(obs_byyear, aes(x=Año,y=Observaciones,group=1)) + geom_line() + geom_point()+ xlab("Año") + ylab("Observaciones") + theme_minimal()
+
+```
+
+### Especies exóticas 
+```{r exotic, include=FALSE}
+#based on https://alexis-catherine.github.io/visualization/inaturalist-invasive-bubble-plot/
+library(curlconverter)
+library(tidyverse)
+library(ggraph)
+library(packcircles)
+library(lubridate)
+
+iconic_name <- NULL
+name <- NULL
+common <- NULL
+months <- NULL 
+place_name <- "Golfo Nuevo"
+proyect_id <- "invertebrados-marinos-golfo-nuevo"
+#extract observation of "invertebrados-marinos-golfo-nuevo" project 
+
+api <- paste("curl -X GET --header 'Accept: application/json' 'https://api.inaturalist.org/v1/observations?endemic=false&geo=true&introduced=true&project_id='", proyect_id, "&quality_grade=research&per_page=200&order=desc&order_by=created_at'", sep = "")
+
+my_ip <- straighten(api) %>% 
+    make_req()
+dat <- content(my_ip[[1]](), as="parsed")
+
+for(i in 1:length(dat$results)){
+  iconic_name <- c(iconic_name, dat$results[[i]]$taxon$iconic_taxon_name)
+  name <- c(name,dat$results[[i]]$taxon$name)
+  if(is.null(dat$results[[i]]$taxon$preferred_common_name)){
+    common <- c(common, NA)}else{
+      common <- c(common, dat$results[[i]]$taxon$preferred_common_name)}
+}
+if (dat$total_results > 200){
+  for (i in 2:floor(dat$total_results/200)){
+    api <- paste("curl -X GET --header 'Accept: application/json' 'https://api.inaturalist.org/v1/observations?endemic=false&geo=true&introduced=true&place_id='", place_id, "&quality_grade=research&page=", i, "&per_page=200&order=desc&order_by=created_at'", sep = "")
+    my_ip <- straighten(api) %>% 
+      make_req()
+    dat <- content(my_ip[[1]](), as="parsed")
+    for(j in 1:length(dat$results)){
+      iconic_name <- c(iconic_name, dat$results[[j]]$taxon$iconic_taxon_name)
+      name <- c(name,dat$results[[j]]$taxon$name)
+      if(is.null(dat$results[[j]]$taxon$preferred_common_name)){
+        common <- c(common, NA)}else{
+          common <- c(common, dat$results[[j]]$taxon$preferred_common_name)}
+    }
+  }
+}
+
+
+dat2 <- dat
+dat2 <- data.frame(iconic_name,name,common)
+
+dat2 %>% 
+  group_by(name, iconic_name) %>%
+  summarise(n = n()) -> data
+names(data) <- c("group", "iconic", "value")
+
+packing <- circleProgressiveLayout(data$value, sizetype='area')
+data <- cbind(data, packing)
+dat.gg <- circleLayoutVertices(packing, npoints=50)
+dat.gg$group <- rep(data$iconic, each = 51)
+
+```
+
+```{r exotic2}
+# Make the plot
+ggplot() + 
+  # Make the bubbles
+  geom_polygon(data = dat.gg, aes(x, y, group = id), fill="chartreuse3",colour = "black", alpha = 0.6) +
+  # Add text in the center of each bubble + control its size
+  geom_text(data = data, aes(x, y, size=value, label = group),fontface = "italic") +
+  scale_size_continuous(range = c(1,5), guide = F) +
+  # General theme:
+  theme_void() + 
+  theme() +
+  coord_equal() + 
+  ggtitle(paste("Especies exóticas de", place_name)) +
+  theme(plot.title = element_text(size = 12, face = "bold")) + 
+  labs(caption ="El tamaño del circulo representa la cantidad de observaciones.\n Source code:https://alexis-catherine.github.io/") + 
+  theme(legend.position = "none")+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+Column3{data-width=150}
+-------
+
+### Números
+```{r}
+#spp 
+nspp = length(unique(pardelas_obs_dataframe$name))
+gauge(nspp, min=0, max=200,label="Species")
+
+```
+
+

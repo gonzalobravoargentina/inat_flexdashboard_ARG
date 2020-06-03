@@ -39,7 +39,7 @@ palette(brewer.pal(8, "Set2"))
 #As some of the taxon information  (eg Phylum) is not included in the rinat package we proceed to import data from csv. the package "spocc" shoul be explored for download data.
 
 #Read data downloaded from inat site 
-pardelas_obs_web <- read.csv("observations-MAY2020.csv")
+pardelas_obs_web <- read.csv("observations-MAY27.csv")
 
 #we create a dataframe with the variable of interest.
 pardelas_obs_dataframe <- data.frame(
@@ -81,7 +81,8 @@ Column2 {.tabset .tabset-fade}
 
 ### Mapa
 ```{r map}
-map_leaflet(pardelas_obs_dataframe,size=4)
+map_leaflet(pardelas_obs_dataframe,size=4) %>% 
+  addMiniMap(toggleDisplay = T)
 ```
 
 
