@@ -1,7 +1,7 @@
 inat_flexdashboard_ARG
 ====
 
-Create a Flexdashboard in R Markdown to visualize observations data from a inaturalist project. Data may be obtained using the "rinat" package, by API or downloaded from [inaturalist](https://www.inaturalist.org/) web site and imported via .csv. This Flexdashboard is made using data from the project [Biodiversidad Marina Bahía Pardelas](https://www.argentinat.org/projects/biodiversidad-marina-bahia-pardelas) and [Invertebrados Marinos Golfo Nuevo](https://www.argentinat.org/projects/invertebrados-marinos-golfo-nuevo) 
+Create a Flexdashboard in R Markdown to visualize observations from a inaturalist project. Data may be obtained using the "rinat" package, by API or downloaded from [inaturalist](https://www.inaturalist.org/) web site and imported via .csv. This Flexdashboard is made using data from the project [Biodiversidad Marina Bahía Pardelas](https://www.argentinat.org/projects/biodiversidad-marina-bahia-pardelas) and [Invertebrados Marinos Golfo Nuevo](https://www.argentinat.org/projects/invertebrados-marinos-golfo-nuevo) 
 
 ## Sources
 
