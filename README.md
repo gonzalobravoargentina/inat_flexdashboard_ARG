@@ -31,6 +31,3 @@ Only available in the development version from GitHub
 ```{r eval=FALSE}
 devtools::install_github("hrbrmstr/curlconverter")
 ```
-
-
-[![psub_footer](https://www.proyectosub.org.ar/wp-content/uploads/2020/04/logoletras_org.png)](https://proyectosub.org.ar)
